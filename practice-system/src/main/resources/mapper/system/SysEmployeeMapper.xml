@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.houfz.system.mapper.SysEmployeeMapper">
+    
+    <resultMap type="SysEmployee" id="SysEmployeeResult">
+        <result property="id"    column="Id"    />
+        <result property="empName"    column="emp_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="empDegreeName"    column="emp_degree_name"    />
+    </resultMap>
+
+    <sql id="selectSysEmployeeVo">
+        select Id, emp_name, sex, age, dept_name, emp_degree_name from sys_employee
+    </sql>
+
+    <select id="selectSysEmployeeList" parameterType="SysEmployee" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        <where>  
+            <if test="id != null "> and Id = #{id}</if>
+            <if test="empName != null  and empName != ''"> and emp_name like concat('%', #{empName}, '%')</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="empDegreeName != null  and empDegreeName != ''"> and emp_degree_name like concat('%', #{empDegreeName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectSysEmployeeById" parameterType="Long" resultMap="SysEmployeeResult">
+        <include refid="selectSysEmployeeVo"/>
+        where Id = #{id}
+    </select>
+        
+    <insert id="insertSysEmployee" parameterType="SysEmployee" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_employee
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="empName != null">emp_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="age != null">age,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="empDegreeName != null">emp_degree_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="empName != null">#{empName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="empDegreeName != null">#{empDegreeName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysEmployee" parameterType="SysEmployee">
+        update sys_employee
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="empName != null">emp_name = #{empName},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="empDegreeName != null">emp_degree_name = #{empDegreeName},</if>
+        </trim>
+        where Id = #{id}
+    </update>
+
+    <delete id="deleteSysEmployeeById" parameterType="Long">
+        delete from sys_employee where Id = #{id}
+    </delete>
+
+    <delete id="deleteSysEmployeeByIds" parameterType="String">
+        delete from sys_employee where Id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
